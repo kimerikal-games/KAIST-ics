@@ -6,12 +6,18 @@ from bs4 import BeautifulSoup
 from icalendar import Calendar, Event
 
 
+def main(year, outfilename):
+    all_calendar = download_yearly_calendar(year)
+    cal = make_ical(year, all_calendar)
+
+    with open(outfilename, "wb") as f:
+        f.write(cal.to_ical())
+
+
 def download_yearly_calendar(year):
     all_calendar = []
     with concurrent.futures.ProcessPoolExecutor() as executor:
-        for calendar in executor.map(
-            download_monthly_calendar, [year] * 12, range(1, 13)
-        ):
+        for calendar in executor.map(download_monthly_calendar, [year] * 12, range(1, 13)):
             all_calendar.extend(calendar)
     return all_calendar
 
@@ -22,10 +28,12 @@ def download_monthly_calendar(year, months):
     url = "https://kaist.ac.kr/kr/html/edu/03110101.html"
     data = {"groups": "university", "year": f"{year}", "month": f"{months:02d}"}
 
-    html = requests.post(url, data=data).text
+    with requests.post(url, data=data) as res:
+        res.raise_for_status()
+        html = res.text
     soup = BeautifulSoup(html, "html.parser")
 
-    for row in soup.select_one(".schedule_table tr"):
+    for row in soup.select(".schedule_table tr"):
         dates, title = row.select("td")
         dates = dates.text.strip()
         title = title.text.strip()
@@ -42,7 +50,7 @@ def parse_date(year, string):
 
 def make_ical(year, all_calendar):
     cal = Calendar()
-    cal.add("prodid", f"-//KAIST {year} Academic Calendar//youngjun.im//")
+    cal.add("prodid", f"-//KAIST {year} Academic Calendar//codeberg.org/kimerikal/KAIST-ics//")
     cal.add("version", "2.0")
 
     for dates, title in all_calendar:
@@ -59,15 +67,6 @@ def make_ical(year, all_calendar):
         e.add("dtend", end_date)
         cal.add_component(e)
     return cal
-
-
-def main(year, outfilename):
-    year = 2021
-    all_calendar = download_yearly_calendar(year)
-    cal = make_ical(year, all_calendar)
-
-    with open(outfilename, "wb") as f:
-        f.write(cal.to_ical())
 
 
 if __name__ == "__main__":
