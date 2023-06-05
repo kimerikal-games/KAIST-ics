@@ -1,23 +1,43 @@
 KAIST Academic iCalendar
 ========================
 
-This script downloads the academic calendar of KAIST and converts it to iCalendar format.
-The iCalendar file can be imported to Google Calendar, Outlook, etc.
+The purpose of this repository is two-fold:
 
-Usage
------
+1. To provide an iCalendar file for KAIST academic calendar.
+2. To demonstrate how to use Python to scrape a website and convert the data to iCalendar format.
 
-1. Install the required packages.
+Add calendar to your application
+--------------------------------
+
+The iCalendar files, suitable for import into most calendar applications, are
+available in the [generated](generated) directory of this repository.
+
+Most calendar applications support loading .ics files via URL.
+
+1. Enter [generated](generated) directory.
+2. Choose the year you want to import.
+3. Right-click the "Raw" button and select "Copy link".
+4. Paste the copied link into your calendar application.
+
+Alternatively, you can download the .ics file. After choosing the .ics file,
+
+* Click on the "Download" button. Or,
+* Right-click the "Raw" button and select "Save link as".
+
+Generate the iCalendar file
+---------------------------
+
+The script included in this repository is designed to download the academic
+calendar from official KAIST website and convert it into the iCalendar format.
+
+1. Install the required python packages.
     ```
     $ pip install -r requirements.txt
     ```
-2. Run the script. The ics file will be generated in the current directory.
+2. Run the script. The .ics file will be generated in the current directory.
     ```
     $ python script.py -y 2023
     ```
-3. Import the generated iCalendar file to your calendar application.
-    - Google Calendar: https://support.google.com/calendar/answer/37118
-    - Outlook: https://support.microsoft.com/en-us/office/import-or-subscribe-to-a-calendar-in-outlook-com-cff1429c-5af6-41ec-a5b4-74f2c278e98c
 
 License
 -------
